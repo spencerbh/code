@@ -69,4 +69,4 @@ console.log(isMessageFromAliceAuthentic);
 
 // Note
 console.log('\nWhile this may seem like a silly example, message signing and verification allows us to \
-            securely connect to websites, download files from servers, and run any public blockchain network!\n')
+            securely connect to websites, download files from servers, and run any public blockchain network!\n');
