@@ -8,14 +8,14 @@ class Client {
   }
 
   // Creates a keccak256/SHA3 hash of some data
-  Hash(data) {
+  hash(data) {
     const dataStr = JSON.stringify(data);
     return EthCrypto.hash.keccak256(data);
   }
 
   // Signs a hash of data with the client's private key
   sign(message) {
-    const messageHash = this.toHash(message);
+    const messageHash = this.hash(message);
     return EthCrypto.sign(this.wallet.privateKey, messageHash);
   }
 
@@ -28,15 +28,25 @@ class Client {
   // Buys tokens from Paypal
   buy(amount) {
     // Let the user know that they just exchanged off-network goods for network tokens
-    console.log('AN INTERESTING MESSAGE');
+    console.log(`You just traded some wheat grass for ${amount} tokens on juice_net`);
   }
 
   // Generates new transactions
   generateTx(to, amount, type) {
-    // TODO:
     // create an unsigned transaction
+    const txn_unsigned = {
+      type,
+      amount,
+      from: this.wallet.address,
+      to,
+    }
     // create a signature of the transaction
+    const txn = {
+      contents: txn_unsigned,
+      sig: this.sign(txn_unsigned)
+    }
     // return a Javascript object with the unsigned transaction and transaction signature
+    return txn;
   }
 }
 
