@@ -1,6 +1,6 @@
 const EthCrypto = require('eth-crypto');
-const Client = require('./Client.js');
-const Paypal = require('./Paypal.js');
+const Client = require('./client.js');
+const Paypal = require('./paypal.js');
 
 // Paypal Network Demo
 console.log('//////////////////////////////////////////');

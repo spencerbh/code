@@ -1,5 +1,5 @@
 const EthCrypto = require("eth-crypto");
-const Client = require("./Client.js");
+const Client = require("./client.js");
 
 // Our naive implementation of a centralized payment processor
 class Paypal extends Client {
@@ -14,34 +14,41 @@ class Paypal extends Client {
 				balance: 1000000,
 				// Paypal's initial nonce
 				nonce: 0
-      }
+      },
     };
 		// pending transaction pool
 		this.pendingTx = [];
     // the history of transactions
     this.txHistory = [];
 		// the network fee
-		// TODO
+		this.fee = 1;
 		// blacklist of accounts to be censored
-		// TODO
+		this.blacklist = [];
   }
 
 	// Removes funds from user accounts and adds them to Paypal's balance
 	// - In reality, it would be far easier for Paypal to mint themselves extra cash so they could look like a legit operation on the outside, but really just print money for themselves whenever they wanted. Then they would never be accused of stealing, but they could steal as much as they wanted. Yay magic internet money!
   stealAllFunds() {
 		// sums up all the value in the network
-		// TODO
-				// removes everyone's balance
-				// TODO
+		let sum = 0;
+    for (const address in this.state) {
+      if(this.state[address] !== this.wallet.address) {
+        sum += this.state[address].balance;
+        // remove everyone's balance
+        this.state[address].balance = 0;
+      }
+    }
+
 		// adds that value to Paypal's wallet
-		// TODO
+    this.state[this.wallet.address].balance += sum;
   }
 
 	// Mints funds without adding the transaction to the history
-	// - In reality, this would not work as corporations have to get audited for tax purposes and whatnot, so they'd have to call this something clever like a network upgrade to invest in R&D or a "restructuring". In either case, there would be a glossy marketing campaign put together to make you feel good about it :)
+	// - In reality, this would not work as corporations have to get audited for tax purposes and whatnot, so they'd have to call this something clever like a network upgrade to invest in R&D or a "restructuring".
+  // In either case, there would be a glossy marketing campaign put together to make you feel good about it :)
 	mintSecretFunds(amount) {
 		// it's literally just 1 line of code...
-		// TODO
+		this.state[this.wallet.address].balance += amount;
 	}
 
   // Checks that the sender of a transaction is the same as the signer
@@ -61,9 +68,16 @@ class Paypal extends Client {
   // Check if the user's address is on a blacklist. If not, check is the user's address is already in the state, and if not, add the user's address to the state
   checkUserAddress(tx) {
 		// check if the sender or receiver are on the blacklist
-		// TODO
-			// if the sender or receiver are banned, return false
-			// TODO
+		if (
+      this.blacklist.includes(tx.contents.from)
+      || this.blacklist.includes(tx.contents.to)
+    ) {
+      console.log('ERROR one of the parties in this tx is on the BLACKLIST');
+      console.log(this.blacklist);
+      console.log(tx.contents);
+      // if the sender or reciever are banned, return false
+      return false;
+    }
     // check if the sender is in the state
     if (!(tx.contents.to in this.state)) {
 			// if the sender is not in the state, add their address and initialize an empty balance and nonce of 0
@@ -196,18 +210,19 @@ class Paypal extends Client {
 					}
         }
       }
+    }
     // if any checks fail return false
     return false;
   }
 
   // Updates account balances according to the transaction, then adds the transaction to the history
-  applyTransaction(tx) {
+  applyTx(tx) {
     // first decrease the balance of the transaction sender/signer
     this.state[tx.contents.from].balance -= tx.contents.amount;
     // then increase the balance of the transaction receiver
     this.state[tx.contents.to].balance += tx.contents.amount;
-		// then increment the nonce of the transaction sender
-		this.state[tx.contents.from].nonce += 1;
+    // then increment the nonce of the transaction sender
+    this.state[tx.contents.from].nonce += 1;
     // then add the transaction to the transaction history
     this.txHistory.push(tx);
     // return true once the transaction is processed
@@ -240,19 +255,19 @@ class Paypal extends Client {
 	// Charges a fee to use the network
 	chargeFee(tx) {
 		// removes the network fee from the sender's balance
-		// TODO
+		this.state[tx.contents.from].balance -= this.fee;
 		// adds the network fee to payment operator's balance
-		// TODO
+		this.state[this.wallet.address].balance += this.fee;
 	}
 
 	// Checks if a transaction is valid, then processes it, then checks if there are any valid transactions in the pending transaction pool and processes those too
 	processTx(tx) {
 		// charge a fee to use the network
-		// TODO
+		this.chargeFee(tx);
 		// check the transaction is valid
 		if (this.checkTx(tx)) {
 			// apply the transaction to Paypal's state
-			this.applyTransaction(tx);
+			this.applyTx(tx);
 			// check if any pending transactions are now valid, and if so process them too
 			this.processPendingTx()
 		}
