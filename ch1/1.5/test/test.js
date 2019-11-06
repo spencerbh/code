@@ -30,13 +30,17 @@ describe('Censorship', () => {
   const alice = new Client();
   const bob = new Client();
   const eve = new Client();
+//  console.log(paypal);
+
   paypal.blacklist.push(eve.wallet.address);
   const mintAliceTokens = paypal.generateTx(alice.wallet.address, 100, 'mint');
   paypal.processTx(mintAliceTokens);
   const aliceTx2Bob = alice.generateTx(bob.wallet.address, 10, 'send');
   const aliceTx2Eve = alice.generateTx(eve.wallet.address, 10, 'send');
+//  console.log("\nskip\n")
   console.log(paypal);
   // send a transaction to and from non-blacklisted accounts
+  console.log(paypal.processTx(aliceTx2Bob)); // new line
   it('should allow transactions from non-blacklisted addresses', () => {
     assert.equal(true, paypal.processTx(aliceTx2Bob));
   });

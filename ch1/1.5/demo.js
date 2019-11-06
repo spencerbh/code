@@ -110,12 +110,18 @@ financialAttrition(
 
 // The truth will set you free
 console.log(
-  "\nWow! Shocking... Paypal made money while everyone else's balance went down. One could argue that this is because Paypal provides a valuable service and is compensated for that, which is a fair and reasonable this to say. IF, however, Paypal gained a monopoly and started raising the fees... well then that would be a different story. Try playing with the model to see what happens with different fees.",
+  `\nWow! Shocking... Paypal made money while everyone else's balance went down.
+  One could argue that this is because Paypal provides a valuable service and is compensated for that,
+  which is a fair and reasonable this to say. IF, however, Paypal gained a monopoly and started raising the fees...
+  well then that would be a different story. Try playing with the model to see what happens with different fees.`,
 );
 
 // The plot thickens...
 console.log(
-  "\nWell that was fun. But wait! There's more. It turns out that Eve was actually a space pirate, and Paypal is forbidden from serving space pirates. Upon hearing this news, Paypal adds Eve's address to the blacklist (duhn duhn duhn...). Eve is now banned from using Paypal or their services.",
+  `\nWell that was fun. But wait! There's more. It turns out that Eve was actually a space pirate,
+  and Paypal is forbidden from serving space pirates.
+  Upon hearing this news, Paypal adds Eve's address to the blacklist (duhn duhn duhn...).
+  Eve is now banned from using Paypal or their services.`,
 );
 paypal.blacklist.push(eve.wallet.address);
 
