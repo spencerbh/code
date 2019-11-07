@@ -270,7 +270,9 @@ class Paypal extends Client {
 			this.applyTx(tx);
 			// check if any pending transactions are now valid, and if so process them too
 			this.processPendingTx()
+      return true
 		}
+    return false
 	}
 }
 

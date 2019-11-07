@@ -40,7 +40,7 @@ describe('Censorship', () => {
 //  console.log("\nskip\n")
   console.log(paypal);
   // send a transaction to and from non-blacklisted accounts
-  console.log(paypal.processTx(aliceTx2Bob)); // new line
+//  console.log(paypal.processTx(aliceTx2Bob)); // new line
   it('should allow transactions from non-blacklisted addresses', () => {
     assert.equal(true, paypal.processTx(aliceTx2Bob));
   });
