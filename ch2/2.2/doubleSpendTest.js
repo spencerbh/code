@@ -16,7 +16,7 @@ class DoubleSpendNetSim extends NetworkSimulator {
     super.tick();
     const victimBalances = [];
     // for all the victims (network participants)
-    for (const v of victims) {
+    for (const v of victim_Nodes) {
       victimBalances.push([
         v.state[evilNode.wallet.address].balance,
         v.state[v.wallet.address].balance,
@@ -27,7 +27,8 @@ class DoubleSpendNetSim extends NetworkSimulator {
           victimBalances[victimBalances.length - 1][1]
         }`,
       );
-      // if a successful double spend is detected (nodes accepted both transactions to the victims), then stop the simulation and log the results to the console
+      // if a successful double spend is detected (nodes accepted both transactions to the victims),
+      // then stop the simulation and log the results to the console
       if (Object.keys(v.invalidNonceTxs).length > 0) {
         console.log(
           `Double spend propagated to victim ${victimBalances.length}`,
@@ -80,14 +81,39 @@ for (let i = 0; i < numNodes; i++) {
 
 // Attempting to double spend!
 // TODO: designate the node that will double spend
+const evilNode = nodes[0];
 // TODO: designate the nodes that we will perform the attack on
+
+// extra reference to evilNode specific to select from evilNode's? peers,
+// as opposed to some random nodes in the network
+const victim_Nodes = [
+  network.peers[evilNode.pid][0], // first peer to the evilNode
+  network.peers[evilNode.pid][1], // second peer to the evilNode
+];
+
+// will designating the vicitim node without referenince the evilNode work?
+// Seems to work...
+//const victim_Nodes = [
+//  nodes[1], nodes[2]
+//];
+
+
 // TODO: create 2 identical transactions that have different recipients
+const spends = [
+  evilNode.generateTx(victim_Nodes[0].wallet.address, (amount = 100)),
+  evilNode.generateTx(victim_Nodes[1].wallet.address, (amount = 100)),
+];
+
 // TODO: broadcast both transaction to the network at the same time
+
+network.broadcastTo(evilNode.pid, victim_Nodes[0], spends[0]);
+network.broadcastTo(evilNode.pid, victim_Nodes[1], spends[1]);
 
 // Running the simulation
 // due to network latency some nodes will receive one transaction before the other
 // let's run the network until an invalid spend is detected
-// we will also detect if the two victim nodes, for a short time, both believe they have been sent money by our evil node. That's our double spend!
+// we will also detect if the two victim nodes, for a short time,
+// both believe they have been sent money by our evil node. That's our double spend!
 network.run((steps = 20));
 
 // If the network was able to run without an error, that means that the double spend was not successful
