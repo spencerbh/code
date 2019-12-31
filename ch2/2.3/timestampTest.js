@@ -79,9 +79,23 @@ const generateCustomTx = (to, amount, timestamp, node) => {
 // TODO
 // create two transactions with the same amount, but with different timestamps
 // broadcast both transactions to the network at the same time
+const spend = generateCustomTx(
+  victims[0].wallet.address,
+  (amount = 100),
+  (timestamp = 10),
+  evilNode,
+);
 
+const fakeEarlySpend = generateCustomTx(
+  victims[0].wallet.address,
+  (amount = 100),
+  (timestamp = 0),
+  evilNode,
+);
+network.broadcast(evilNode.pid,spend);
 // Now run the network until an invalid spend is detected.
-// We will also detect if the two victim nodes, for a short time, both believe they have been sent money by our evil node. That's our double spend!
+// We will also detect if the two victim nodes, for a short time,
+// both believe they have been sent money by our evil node. That's our double spend!
 try {
   network.run((steps = 100));
 } catch (e) {
